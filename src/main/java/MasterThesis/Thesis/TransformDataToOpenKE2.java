@@ -27,11 +27,11 @@ public class TransformDataToOpenKE2 {
 	}
 	
 	private void transformData() {
-		String modelLocation = "/data/Datasets/mappingbased_objects_en_2016_10.ttl";
-		String train2IdLocation = "/data/Datasets/TrainingFiles/train2id.txt";
-		String test2IdLocation = "/data/Datasets/TrainingFiles/test2id.txt";
-		String valid2IdLocation = "/data/Datasets/TrainingFiles/valid2id.txt";
-		String diffLocation = "/data/Datasets/Difference.ttl";
+		String modelLocation = "./Datasets/mappingbased_objects_en_2016_10.ttl";
+		String train2IdLocation = "/data/Datasets/TrainingFiles2/train2id.txt";
+		String test2IdLocation = "/data/Datasets/TrainingFiles2/test2id.txt";
+		String valid2IdLocation = "/data/Datasets/TrainingFiles2/valid2id.txt";
+		String diffLocation = "./Datasets/Difference.ttl";
 		HashMap<String, Integer> entities = new HashMap<String, Integer>();
 		HashMap<String, Integer> properties = new HashMap<String, Integer>();
 		Dataset ds = this.createDataset(modelLocation);
@@ -49,14 +49,14 @@ public class TransformDataToOpenKE2 {
 		dsDiff.begin(ReadWrite.READ);
 		int numberStatementsDiff = this.storeEntitesAndProperties(modelDiff, entities, properties);
 		dsDiff.end();
-		String properties2IdLocation = "/home/necker/Documents/Datasets/TrainingFiles/relation2id.txt";
-		String entities2IdLocation = "/home/necker/Documents/Datasets/TrainingFiles/entity2id.txt";
+		String properties2IdLocation = "/data/Datasets/TrainingFiles2/relation2id.txt";
+		String entities2IdLocation = "/data/Datasets/TrainingFiles2/entity2id.txt";
 		try {
 			this.writeListFiles(properties, properties2IdLocation);
 			System.out.println("I was here 6");
 			this.writeListFiles(entities, entities2IdLocation);
 			System.out.println("I was here 7");
-			String diff2IdLocation = "/home/necker/Documents/Datasets/TrainingFiles/diff2id.txt";
+			String diff2IdLocation = "/data/Datasets/TrainingFiles2/diff2id.txt";
 			dsDiff.begin(ReadWrite.READ);
 			this.writeStatementFile(diff2IdLocation, modelDiff, entities, properties, numberStatementsDiff);
 			dsDiff.end();
@@ -176,6 +176,9 @@ public class TransformDataToOpenKE2 {
 				if(i%100 == 0) {
 					System.out.println(i + " " + line);
 				}
+				if(i%10000 == 0) {
+					bw.flush();
+				}
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -249,6 +252,9 @@ public class TransformDataToOpenKE2 {
 				bw.newLine();
 				if(i%1000 == 0) {
 					System.out.println(i);
+				}
+				if(i%10000 == 0) {
+					bw.flush();
 				}
 			}
 		} catch(Exception e) {
