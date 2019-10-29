@@ -9,7 +9,6 @@ import java.util.HashMap;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -26,12 +25,12 @@ public class CompareSample {
 	private HashMap<String, String> relations;
 	
 	private void compare() {
-		String pathSampleEntities = "./Datasets/DBPediaSample/entity2id.txt";
-		String pathSampleRelations = "./Datasets/DBPediaSample/relation2id.txt";
+		String pathSampleEntities = "./Datasets/DBPediaSample2/entity2id.txt";
+		String pathSampleRelations = "./Datasets/DBPediaSample2/relation2id.txt";
 		String pathNegativeSampleModel = "./Datasets/Difference.ttl";
-		String diffLocation = "./Datasets/DBPediaSample/diff2id.txt";
-		String entityLocation = "./Datasets/DBPediaSample/entity2idNew.txt";
-		String relationsLocation = "./Datasets/DBPediaSample/relation2idNew.txt";
+		String diffLocation = "./Datasets/DBPediaSample2/diff2id.txt";
+		String entityLocation = "./Datasets/DBPediaSample2/entity2idNew.txt";
+		String relationsLocation = "./Datasets/DBPediaSample2/relation2idNew.txt";
 		Dataset ds = this.createDataset(pathNegativeSampleModel);
 		Model modelNegatives = this.loadModel(pathNegativeSampleModel, ds);
 		entities = new HashMap<String, String>();
@@ -66,6 +65,7 @@ public class CompareSample {
 			String line = br.readLine();
 			while(line != null) {
 				String[] split = line.split("\\s+");
+				System.out.println(split[0] + " " +split[1]);
 				sample.put(split[0], split[1]);
 				line = br.readLine();
 			}
@@ -87,37 +87,46 @@ public class CompareSample {
 				Statement stmt = iter.next();
 				Resource subject = stmt.getSubject();
 				Property predicate = stmt.getPredicate();
-				RDFNode object = stmt.getObject();
+				Resource object = stmt.getResource();
 				
-				String subjectString  = subject.toString();
-				String predicateString = predicate.toString();
-				String objectString = object.toString();
+				String subjectString  = subject.getLocalName();
+				System.out.println("SubjectString" +subjectString);
+				String predicateString = predicate.getLocalName();
+				System.out.println("predicateString" +predicateString);
+				String objectString = object.getLocalName();
+				System.out.println("objectstring " + objectString);
 				
 				String keyObject, keySubject, keyRelation;
 				
-				if(entities.containsKey(subjectString) || entities.containsKey(objectString)) {
+				if(entities.containsKey(subjectString) && entities.containsKey(objectString)) {
 					keySubject = entities.get(subjectString);
+					System.out.println("Key Subject: "+keySubject);
 					keyObject = entities.get(objectString);
+					System.out.println("Key Object: "+keyObject);
 					keyRelation = relations.get(predicateString);
-					if(keySubject.isEmpty()) {
+					System.out.println("Key Relation: " + keyRelation);
+					if(keySubject == null || keySubject.isEmpty()) {
 						keySubject = Integer.toString(entities.size());
+						System.out.println("New Key Subject: "+keySubject);
 						entities.put(subjectString, keySubject);
 					}
-					if(keyObject.isEmpty()) {
+					if(keyObject == null || keyObject.isEmpty()) {
 						keyObject = Integer.toString(entities.size());
+						System.out.println("New Key Object: "+keyObject);
 						entities.put(objectString, keyObject);
 					}
-					if(keyRelation.isEmpty()) {
+					if(keyRelation == null || keyRelation.isEmpty()) {
 						keyRelation = Integer.toString(relations.size());
+						System.out.println("New Key relation: " + keyRelation);
 						relations.put(predicateString, keyRelation);
 					}
 					String line = keySubject + " " + keyObject + " " + keyRelation;
 					bw.write(line);
 					bw.newLine();
 				}
-				bw.close();
-				fw.close();
 			}
+			bw.close();
+			fw.close();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
