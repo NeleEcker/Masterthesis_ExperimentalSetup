@@ -25,12 +25,12 @@ public class CompareSample {
 	private HashMap<String, String> relations;
 	
 	private void compare() {
-		String pathSampleEntities = "./Datasets/DBPediaSample2/entity2id.txt";
-		String pathSampleRelations = "./Datasets/DBPediaSample2/relation2id.txt";
+		String pathSampleEntities = "./Datasets/DBPediaSample/entity2id.txt";
+		String pathSampleRelations = "./Datasets/DBPediaSample/relation2id.txt";
 		String pathNegativeSampleModel = "./Datasets/Difference.ttl";
-		String diffLocation = "./Datasets/DBPediaSample2/diff2id.txt";
-		String entityLocation = "./Datasets/DBPediaSample2/entity2idNew.txt";
-		String relationsLocation = "./Datasets/DBPediaSample2/relation2idNew.txt";
+		String diffLocation = "./Datasets/DBPediaSample/diff2id.txt";
+		String entityLocation = "./Datasets/DBPediaSample/entity2idNew.txt";
+		String relationsLocation = "./Datasets/DBPediaSample/relation2idNew.txt";
 		Dataset ds = this.createDataset(pathNegativeSampleModel);
 		Model modelNegatives = this.loadModel(pathNegativeSampleModel, ds);
 		entities = new HashMap<String, String>();
@@ -98,7 +98,7 @@ public class CompareSample {
 				
 				String keyObject, keySubject, keyRelation;
 				
-				if(entities.containsKey(subjectString) && entities.containsKey(objectString)) {
+				if(entities.containsKey(subjectString) && entities.containsKey(objectString) && relations.containsKey(predicateString)) {
 					keySubject = entities.get(subjectString);
 					System.out.println("Key Subject: "+keySubject);
 					keyObject = entities.get(objectString);

@@ -16,7 +16,7 @@ public class ChangeNameToKey {
 	private HashMap<String, String> relations;
 	
 	private void change() {
-		String path = "./Datasets/Sample/";
+		String path = "./Datasets/DBPediaSample/";
 		entities = new HashMap<String, String>();
 		relations = new HashMap<String, String>();
 		this.fillHashMaps(path + "entity2idNew.txt", entities);
