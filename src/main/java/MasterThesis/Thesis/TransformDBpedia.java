@@ -17,12 +17,12 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.util.FileManager;
 
-public class TransformDataToOpenKE2 {
+public class TransformDBpedia {
 	
 	public int propertyIndex = 0;
 	public int entityIndex = 0;
 	public static void main(String[]args) {
-		TransformDataToOpenKE2 transform = new TransformDataToOpenKE2();
+		TransformDBpedia transform = new TransformDBpedia();
 		transform.transformData();
 	}
 	
@@ -53,9 +53,7 @@ public class TransformDataToOpenKE2 {
 		String entities2IdLocation = "/data/Datasets/TrainingFiles2/entity2id.txt";
 		try {
 			this.writeListFiles(properties, properties2IdLocation);
-			System.out.println("I was here 6");
 			this.writeListFiles(entities, entities2IdLocation);
-			System.out.println("I was here 7");
 			String diff2IdLocation = "/data/Datasets/TrainingFiles2/diff2id.txt";
 			dsDiff.begin(ReadWrite.READ);
 			this.writeStatementFile(diff2IdLocation, modelDiff, entities, properties, numberStatementsDiff);
@@ -69,9 +67,7 @@ public class TransformDataToOpenKE2 {
 	
 	private Model loadModel(String modelLocation, Dataset ds) {
 		Model model = ds.getDefaultModel();
-		System.out.println("Hi again");
 		FileManager.get().readModel(model, modelLocation);
-		System.out.println("And again");
 		return model;
 	}
 	

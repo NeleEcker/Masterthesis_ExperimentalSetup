@@ -15,9 +15,9 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.util.FileManager;
 
-public class CompareSample {
+public class CombineSampleWithNegs {
 	public static void main(String[]args) {
-		CompareSample compare = new CompareSample();
+		CombineSampleWithNegs compare = new CombineSampleWithNegs();
 		compare.compare();
 	}
 	
@@ -98,6 +98,7 @@ public class CompareSample {
 				
 				String keyObject, keySubject, keyRelation;
 				
+				//if(entities.containsKey(subjectString) || entities.containsKey(objectString){
 				if(entities.containsKey(subjectString) && entities.containsKey(objectString) && relations.containsKey(predicateString)) {
 					keySubject = entities.get(subjectString);
 					System.out.println("Key Subject: "+keySubject);

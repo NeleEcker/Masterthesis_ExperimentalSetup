@@ -19,7 +19,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.util.FileManager;
 
-public class DifferenceNellSample {
+public class TransformAndSampleNell {
 	public int propertyIndex = 0;
 	public int entityIndex = 0;
 	public ArrayList<String> negEntities = new ArrayList<String>();
@@ -28,7 +28,7 @@ public class DifferenceNellSample {
 	public ArrayList<String> trueSamples = new ArrayList<String>();
 
 	public static void main(String[] args) {
-		DifferenceNellSample diff = new DifferenceNellSample();
+		TransformAndSampleNell diff = new TransformAndSampleNell();
 		diff.getDifference();
 
 	}
@@ -36,19 +36,20 @@ public class DifferenceNellSample {
 	private void getDifference() {
 		String modelDirectory = "/data/Datasets/NELL/NELL.08m.1100.esv.csv.NELL.08m.1100.cesv.csv.nt";
 		String negSamplesDirectory = "/home/necker/eclipse-workspace/Thesis/Datasets/FeedbackFiles/NellNegSample.txt";
-		String train2IdLocation = "/data/Datasets/NELL/TrainingFilesSample2/train2id.txt";
-		String test2IdLocation = "/data/Datasets/NELL/TrainingFilesSample2/test2id.txt";
-		String valid2IdLocation = "/data/Datasets/NELL/TrainingFilesSample2/valid2id.txt";
-		String properties2IdLocation = "/data/Datasets/NELL/TrainingFilesSample2/relation2id.txt";
-		String entities2IdLocation = "/data/Datasets/NELL/TrainingFilesSample2/entity2id.txt";
-		String diff2IdLocation = "/data/Datasets/NELL/TrainingFilesSample2/diff2id.txt";
+		String train2IdLocation = "/data/Datasets/NELL/SampleHeadAndTail/train2id.txt";
+		String test2IdLocation = "/data/Datasets/NELL/SampleHeadAndTail/test2id.txt";
+		String valid2IdLocation = "/data/Datasets/NELL/SampleHeadAndTail/valid2id.txt";
+		String properties2IdLocation = "/data/Datasets/NELL/SampleHeadAndTail/relation2id.txt";
+		String entities2IdLocation = "/data/Datasets/NELL/SampleHeadAndTail/entity2id.txt";
+		String diff2IdLocation = "/data/Datasets/NELL/SampleHeadAndTail/diff2id.txt";
 		Dataset ds = this.createDataset(modelDirectory);
 		Model currentVersion = this.loadModel(modelDirectory, ds);
 		HashMap<String, Integer> entities = new HashMap<String, Integer>();
 		HashMap<String, Integer> properties = new HashMap<String, Integer>();
-		this.readNegSamples(negSamplesDirectory, entities, properties);
+		HashMap<String, Integer> propertiesUsed = new HashMap<String, Integer>();
+		this.readNegSamples(negSamplesDirectory, entities, properties, propertiesUsed);
 		ds.begin(ReadWrite.READ);
-		this.readTrueSamples(currentVersion, entities, properties);
+		this.readTrueSamples(currentVersion, entities, properties, propertiesUsed);
 		ds.end();
 		try {
 			this.writeListFiles(entities, entities2IdLocation);
@@ -77,7 +78,7 @@ public class DifferenceNellSample {
 		return ds;
 	}
 	
-	private void readNegSamples(String location, HashMap<String, Integer> entities, HashMap<String,Integer> properties) {
+	private void readNegSamples(String location, HashMap<String, Integer> entities, HashMap<String,Integer> properties, HashMap<String, Integer> propertiesUsed) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(location));
 			String line;
@@ -94,6 +95,7 @@ public class DifferenceNellSample {
 				Integer relation = properties.get(elements[1]);
 				if(relation == null) {
 					this.addElementToMap(properties, elements[1], false);
+					propertiesUsed.put(elements[1], 0);
 				}
 				String transformedNegSample = Integer.toString(entities.get(elements[0])) + " " + Integer.toString(entities.get(elements[2])) + " " + Integer.toString(properties.get(elements[1]));
 				//System.out.println(transformedNegSample);
@@ -105,7 +107,7 @@ public class DifferenceNellSample {
 		}
 	}
 	
-	private void readTrueSamples(Model model, HashMap<String, Integer> entities, HashMap<String, Integer> properties) {
+	private void readTrueSamples(Model model, HashMap<String, Integer> entities, HashMap<String, Integer> properties, HashMap<String, Integer> propertiesUsed) {
 		StmtIterator iter = model.listStatements();
 		while(iter.hasNext()) {
 			Statement stmt = iter.nextStatement();
@@ -117,8 +119,10 @@ public class DifferenceNellSample {
 				Resource object = stmt.getResource();
 				nodeName = object.getLocalName();
 			}
-			String resourceName = res.getLocalName();			
-			if((entities.get(resourceName) != null || entities.get(nodeName) != null) && properties.get(prop.getLocalName()) != null) {
+			String resourceName = res.getLocalName();	
+			String propertyName = prop.getLocalName();
+			if((entities.get(resourceName) != null || entities.get(nodeName) != null) && properties.get(propertyName) != null && propertiesUsed.get(propertyName) <= 20000) {
+			//if((entities.get(resourceName) != null && entities.get(nodeName) != null) && properties.get(propertyName) != null) {
 				if(entities.get(resourceName) == null) {
 					this.addElementToMap(entities, resourceName, true);
 				} else if(entities.get(nodeName) == null) {
@@ -128,6 +132,9 @@ public class DifferenceNellSample {
 				/*if(properties.get(prop.getLocalName()) == null) {
 					this.addElementToMap(properties, prop.getLocalName(), false);
 				}*/
+				
+				Integer numberUsed = propertiesUsed.get(propertyName);
+				propertiesUsed.put(propertyName, numberUsed+1);
 				
 				String transformedTrueSample = Integer.toString(entities.get(resourceName)) + " " + Integer.toString(entities.get(nodeName)) + " " + Integer.toString(properties.get(prop.getLocalName()));
 				trueSamples.add(transformedTrueSample);

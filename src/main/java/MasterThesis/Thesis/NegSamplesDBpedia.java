@@ -7,11 +7,11 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.util.FileManager;
 
-public class Difference {
+public class NegSamplesDBpedia {
 	public static void main(String[] args) {
 		String oldVersionLocation = "/home/necker/Documents/Datasets/mappingbased_objects_en_2016_04.ttl";
 		String newVersionLocation = "/home/necker/Documents/Datasets/mappingbased_objects_en_2016_10.ttl";
-		Difference diff = new Difference();
+		NegSamplesDBpedia diff = new NegSamplesDBpedia();
 		Model difference = diff.getDifference(oldVersionLocation, newVersionLocation);
 		diff.storeDifference(difference);
 	}

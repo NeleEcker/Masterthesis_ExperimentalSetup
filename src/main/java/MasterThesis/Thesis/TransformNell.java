@@ -19,7 +19,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.util.FileManager;
 
-public class DifferenceNell {
+public class TransformNell {
 	public int propertyIndex = 0;
 	public int entityIndex = 0;
 	public ArrayList<String> negEntities = new ArrayList<String>();
@@ -27,7 +27,7 @@ public class DifferenceNell {
 	public ArrayList<String> negSamples = new ArrayList<String>();
 
 	public static void main(String[] args) {
-		DifferenceNell diff = new DifferenceNell();
+		TransformNell diff = new TransformNell();
 		diff.getDifference();
 
 	}
