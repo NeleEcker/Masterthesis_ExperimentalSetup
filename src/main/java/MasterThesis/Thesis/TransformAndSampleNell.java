@@ -121,17 +121,21 @@ public class TransformAndSampleNell {
 			}
 			String resourceName = res.getLocalName();	
 			String propertyName = prop.getLocalName();
+			//Sample3
 			if((entities.get(resourceName) != null || entities.get(nodeName) != null) && properties.get(propertyName) != null && propertiesUsed.get(propertyName) <= 20000) {
+			//Sample2
 			//if((entities.get(resourceName) != null && entities.get(nodeName) != null) && properties.get(propertyName) != null) {
+			//Sample1
+			//if((entities.get(resourceName) != null || entities.get(nodeName) != null) {
 				if(entities.get(resourceName) == null) {
 					this.addElementToMap(entities, resourceName, true);
 				} else if(entities.get(nodeName) == null) {
 					this.addElementToMap(entities, nodeName, true);
 				}
 				
-				/*if(properties.get(prop.getLocalName()) == null) {
+				if(properties.get(prop.getLocalName()) == null) {
 					this.addElementToMap(properties, prop.getLocalName(), false);
-				}*/
+				}
 				
 				Integer numberUsed = propertiesUsed.get(propertyName);
 				propertiesUsed.put(propertyName, numberUsed+1);
